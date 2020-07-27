@@ -1,0 +1,25 @@
+#ansible playbook takesource code from github and build generate war file and deploy into tomcat server
+---
+- name: perform build and release operations through ansible
+  hosts: localhost
+  tasks:
+  - name: checkout source code
+    git:
+      repo: 'https://github.com/Devops90/java-helloworld.git'
+      dest: /opt/github
+      clone: yes
+      update: yes
+      force: yes
+  - name: perform maven goles
+    command: 'mvn package'
+    args:
+      chdir: /opt/github
+    register: output
+  - name: show maven output
+    debug:
+      var: output
+  - name: deploy war file into tomcat server
+    copy:
+      src: /opt/github/target//JavaHelloWorldApp.war
+      dest: /opt/apache-tomcat-8.5.57/webapps
+      remote_src: no
